@@ -17,7 +17,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /home/ec2-user/myapp
+            cd /home/ec2-user/test-ec2
 
             git pull origin master
 
