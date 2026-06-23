@@ -1,30 +1,26 @@
-From alpine:latest as builder
+FROM golang:1.25-alpine AS builder
 
-Run apk add --no-cache build-base go
+RUN apk add --no-cache ca-certificates
 
 WORKDIR /usr/src/app
 
-copy go.sum go.mod ./
+COPY go.mod go.sum ./
+RUN go mod download
 
-Run go mod download
+COPY . .
 
-copy . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app .
 
-Run go build -o app .
+FROM alpine:3.22
 
-From alpine:latest
+RUN apk add --no-cache ca-certificates
 
 WORKDIR /app
 
-Copy --from=builder /usr/src/app/app .
+COPY --from=builder /usr/src/app/app .
 
-Expose 8000
+EXPOSE 8000
+
+ENV GIN_MODE=release
 
 CMD ["./app"]
-
-
-
-
-
-
-
